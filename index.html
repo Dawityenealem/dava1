@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All-In-One </title>
+    <style>
+        /* CSS RESET & VARIABLES */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        body { background-color: var(--light); color: var(--dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* HEADER & NAVIGATION */
+        header { background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem; }
+        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
+        nav url { list-style: none; display: flex; gap: 1.5rem; align-items: center; }
+        nav a { text-decoration: none; color: var(--gray); font-weight: 500; cursor: pointer; }
+        nav a:hover, nav a.active { color: var(--primary); }
+
+        /* HERO SECTION */
+        .hero { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 4rem 2rem; text-align: center; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; margin-bottom: 1.5rem; opacity: 0.9; }
+
+        /* BUTTONS */
+        .btn { padding: 0.6rem 1.2rem; border-radius: 0.375rem; border: none; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: var(--border); color: var(--dark); }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-danger { background: #ef4444; color: white; }
+
+        /* LAYOUT (MAIN & SIDEBAR) */
+        .app-layout { max-width: 1200px; margin: 2rem auto; display: grid; grid-template-columns: 3fr 1fr; gap: 2rem; padding: 0 1rem; flex: 1; width: 100%; }
+        @media (max-width: 768px) { .app-layout { grid-template-columns: 1fr; } }
+
+        /* CARDS & MEDIA */
+        .card { background: white; border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-body { padding: 1.5rem; }
+        .card-title { font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .media-placeholder { background: #e2e8f0; height: 150px; display: flex; align-items: center; justify-content: center; color: var(--gray); font-style: italic; }
+
+        /* FORMS & INPUTS */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; font-size: 1rem; }
+        .form-control:focus { outline: 2px solid var(--primary); }
+
+        /* NOTIFICATION SYSTEM (JOB WORKER STATUS) */
+        .status-bar { background: #1e293b; color: #38bdf8; padding: 0.5rem; text-align: center; font-family: monospace; font-size: 0.85rem; }
+
+        /* MODAL / POP-UP */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .modal { background: white; padding: 2rem; border-radius: 0.5rem; max-width: 400px; width: 100%; position: relative; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+
+        /* FOOTER */
+        footer { background: var(--dark); color: white; text-align: center; padding: 1.5rem; margin-top: auto; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="status-bar" id="job-worker">System progrecing</div>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">DAWIT WEBSYSTEM</div>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a onclick="app.switchTab('home')" class="active">Home</a></li>
+                    <li><a onclick="app.switchTab('cms')">CMS Admin</a></li>
+                    <li><a onclick="app.openModal()">Payment </a></li>
+                    <li><button class="btn btn-secondary" id="auth-btn" onclick="auth.toggleAuth()">Login</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 id="hero-title">Welcome </h1>
+        <p id="hero-subtitle"> File.</p>
+        <button class="btn btn-primary" onclick="app.openModal()">Get Started</button>
+    </section>
+
+    <div class="app-layout">
+        <main id="main-content">
+            <h2>Latest Content Dynamic Feed</h2>
+            <hr style="margin: 1rem 0; border: 0; border-top: 1px solid var(--border);">
+            <div id="posts-container">
+                </div>
+        </main>
+
+        <aside>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">User </h3>
+                    <div id="auth-status">Loading session status...</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title"> Stats</h3>
+                    <p>Total Items: <span id="db-count">0</span></p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="app.closeModal()">&times;</button>
+            <h3>Secure Checkout </h3>
+            <p style="color: var(--gray); margin-bottom: 1rem; font-size:0.9rem;">Mocking Stripe/PayPal checkout flow </p>
+            <form id="payment-form" onsubmit="api.processPayment(event)">
+                <div class="form-group">
+                    <label>Amount (USD)</label>
+                    <input type="number" class="form-control" value="49" id="pay-amount" required>
+                </div>
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" class="form-control" placeholder="1000168881332" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 StackOne Simulator. All simulated rights reserved.</p>
+    </footer>
+
+    <script>
+        // 1. MOCK DATABASE (Using Browser LocalStorage as the database persistence layer)
+        const db = {
+            init() {
+                if (!localStorage.getItem('cms_posts')) {
+                    const defaultPosts = [
+                        { id: 1, title: "Getting Started with Web Development", body: "This is content managed dynamically via the mock CMS system." },
+                        { id: 2, title: "The Beauty of Single Page Architectures", body: "Application logic routes views seamlessly on the client side." }
+                    ];
+                    localStorage.setItem('cms_posts', JSON.stringify(defaultPosts));
+                }
+            },
+            getPosts() {
+                return JSON.parse(localStorage.getItem('cms_posts'));
+            },
+            savePost(title, body) {
+                const posts = this.getPosts();
+                posts.push({ id: Date.now(), title, body });
+                localStorage.setItem('cms_posts', JSON.stringify(posts));
+                // Trigger background job queue whenever database gets a write event
+                backgroundWorker.triggerQueue('Index New CMS Content');
+                return true;
+            }
+        };
+
+        // 2. APPLICATION PROGRAMMING INTERFACE (API Layer / Server routes simulation)
+        const api = {
+            async getFeed() {
+                // Simulating network latency/Server response
+                return new Promise(resolve => {
+                    setTimeout(() => resolve({ status: 200, data: db.getPosts() }), 300);
+                });
+            },
+            async createPost(title, body) {
+                if(!auth.isAuthenticated()) return { status: 401, message: "Unauthorized" };
+                db.savePost(title, body);
+                return { status: 201, message: "Created successfully" };
+            },
+            async processPayment(e) {
+                e.preventDefault();
+                const amount = document.getElementById('pay-amount').value;
+                app.showWorkerStatus("Connecting to payment gateway API...");
+                
+                setTimeout(() => {
+                    alert(`Success! Mock Payment of $${amount} processed successfully via API routing!`);
+                    app.closeModal();
+                    app.showWorkerStatus("Payment Webhook received. Sending confirmation email job...");
+                    backgroundWorker.triggerQueue('Email Invoice Dispatcher');
+                }, 1500);
+            }
+        };
+
+        // 3. AUTHENTICATION & SESSIONS
+        const auth = {
+            user: null,
+            init() {
+                this.user = JSON.parse(sessionStorage.getItem('user_session'));
+                this.render();
+            },
+            isAuthenticated() { return !!this.user; },
+            toggleAuth() {
+                if (this.user) {
+                    sessionStorage.removeItem('user_session');
+                    this.user = null;
+                } else {
+                    this.user = { name: "Admin Developer", role: "Superuser" };
+                    sessionStorage.setItem('user_session', JSON.stringify(this.user));
+                }
+                this.render();
+                app.renderFeed();
+            },
+            render() {
+                const statusDiv = document.getElementById('auth-status');
+                const btn = document.getElementById('auth-btn');
+                if (this.user) {
+                    statusDiv.innerHTML = `Logged in as: <strong>${this.user.name}</strong>`;
+                    btn.textContent = "Logout";
+                } else {
+                    statusDiv.innerHTML = `<span style="color:red;">Guest Mode (Login to use CMS)</span>`;
+                    btn.textContent = "Login";
+                }
+            }
+        };
+
+        // 4. BACKGROUND JOBS WORKER SIMULATION (Async loops running independent of UI)
+        const backgroundWorker = {
+            triggerQueue(jobName) {
+                app.showWorkerStatus(`[Queue] Scheduling worker task: ${jobName}...`);
+                setTimeout(() => {
+                    app.showWorkerStatus(`[Worker Processing] executing background task: ${jobName}`);
+                    setTimeout(() => {
+                        app.showWorkerStatus(`[Worker Success] Finished task: ${jobName}`);
+                        setTimeout(() => app.showWorkerStatus("System Idle..."), 3000);
+                    }, 2000);
+                }, 1500);
+            }
+        };
+
+        // 5. APPLICATION UI LOGIC & CONTROLLER
+        const app = {
+            currentTab: 'home',
+            init() {
+                db.init();
+                auth.init();
+                this.renderFeed();
+            },
+            async renderFeed() {
+                const response = await api.getFeed();
+                const container = document.getElementById('posts-container');
+                document.getElementById('db-count').textContent = response.data.length;
+
+                if (this.currentTab === 'home') {
+                    container.innerHTML = response.data.map(post => `
+                        <article class="card">
+                            <div class="media-placeholder">[Media Section: Graphical Asset Banner]</div>
+                            <div class="card-body">
+                                <h3 class="card-title">${post.title}</h3>
+                                <p>${post.body}</p>
+                            </div>
+                        </article>
+                    `).join('');
+                } else if (this.currentTab === 'cms') {
+                    if (!auth.isAuthenticated()) {
+                        container.innerHTML = `<h3>⚠️ Access Denied</h3><p>Please click the top-right Login button to simulate authorization credentials check.</p>`;
+                        return;
+                    }
+                    container.innerHTML = `
+                        <div class="card"><div class="card-body">
+                            <h3>Content Management System (CMS) Create Engine</h3><br>
+                            <form onsubmit="app.handleCmsSubmit(event)">
+                                <div class="form-group">
+                                    <label>Article Title</label>
+                                    <input type="text" id="cms-title" class="form-control" required placeholder="Ex: Advanced Micro Frontends">
+                                </div>
+                                <div class="form-group">
+                                    <label>Body Content</label>
+                                    <textarea id="cms-body" class="form-control" rows="4" required placeholder="Write application text data here..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Commit & Write to Database</button>
+                            </form>
+                        </div></div>
+                    `;
+                }
+            },
+            switchTab(tab) {
+                this.currentTab = tab;
+                document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                if(tab === 'cms') {
+                    document.getElementById('hero-title').textContent = "CMS Administrative Core Routing";
+                    document.getElementById('hero-subtitle').textContent = "Protected endpoint simulating authorization gate keeping.";
+                } else {
+                    document.getElementById('hero-title').textContent = "Welcome to the Ultimate Single-Page Simulation";
+                    document.getElementById('hero-subtitle').textContent = "Simulating Frontend, Application Logic, API, Database, and Workers in 1 File.";
+                }
+                this.renderFeed();
+            },
+            async handleCmsSubmit(e) {
+                e.preventDefault();
+                const title = document.getElementById('cms-title').value;
+                const body = document.getElementById('cms-body').value;
+                
+                const res = await api.createPost(title, body);
+                if(res.status === 201) {
+                    alert("Data committed to browser simulated storage!");
+                    this.switchTab('home');
+                }
+            },
+            openModal() { document.getElementById('payment-modal').style.display = 'flex'; },
+            closeModal() { document.getElementById('payment-modal').style.display = 'none'; },
+            showWorkerStatus(msg) { document.getElementById('job-worker').textContent = msg; }
+        };
+
+        // Fire up everything on startup load
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
